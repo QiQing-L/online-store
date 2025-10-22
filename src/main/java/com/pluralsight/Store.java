@@ -1,6 +1,10 @@
 
 package com.pluralsight;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,6 +13,29 @@ import java.util.Scanner;
  * Students will complete the TODO sections to make the program work.
  */
 public class Store {
+    /* ------------------------------------------------------------------
+       Shared data
+       ------------------------------------------------------------------ */
+
+    private static final String listHeaderLine = String.format("%-30s|%-40s|%s", "SKU", "Product Name", "Price");
+
+    /* ------------------------------------------------------------------
+           text colors
+          ------------------------------------------------------------------ */
+    private static final String RESET = "\u001B[0m";
+    private static final String RED = "\u001B[31m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[93m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String BLUE2 = "\u001B[94m";
+    private static final String BOLD = "\u001B[1m";
+    private static final String WHITE2 = "\u001B[97m";
+    private static final String CYAN = "\u001B[36m";
+
+
+    /* ------------------------------------------------------------------
+       Main menu
+       ------------------------------------------------------------------ */
 
     public static void main(String[] args) {
 
@@ -45,6 +72,7 @@ public class Store {
             }
         }
         scanner.close();
+
     }
 
     /**
@@ -58,6 +86,25 @@ public class Store {
     public static void loadInventory(String fileName, ArrayList<Product> inventory) {
         // TODO: read each line, split on "|",
         //       create a Product object, and add it to the inventory list
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                String sku = parts[0];
+                String name = parts[1];
+                double price = Double.parseDouble(parts[2]);
+
+                inventory.add(new Product(sku,name,price));
+            }
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println(RED + "Error, Unable to read file. " + fileName + e + RESET);
+        }
+
     }
 
     /**
@@ -69,6 +116,37 @@ public class Store {
                                        Scanner scanner) {
         // TODO: show each product (id, name, price),
         //       prompt for an id, find that product, add to cart
+
+        System.out.println("All Available Products: ");
+        System.out.println(listHeaderLine);
+        try {
+            for (Product product : inventory) {
+                System.out.println(product);
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Error displaying list. " + e + RESET);
+        }
+
+        System.out.println(WHITE2 + "\nTo add a product to cart enter 'Y' and follow the prompt.' \n" +
+                "To go back to the home screen enter 'X'" + RESET);
+        String choice = scanner.nextLine().trim().toLowerCase();
+        switch (choice) {
+            case "y":
+                System.out.print(CYAN + "Please enter the Product ID/SKU: " + RESET);
+                String id = scanner.nextLine().trim();
+                findProductById(id, inventory);
+                break;
+
+            case "x":
+                System.out.println(GREEN + "Exit to home screen. " + RESET);
+                break;
+
+            default:
+                System.out.println(YELLOW + "Invalid command. Return to home screen. " + RESET);
+                break;
+        }
+
+
     }
 
     /**
