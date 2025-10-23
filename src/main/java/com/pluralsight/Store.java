@@ -1,6 +1,7 @@
 
 package com.pluralsight;
 
+import javax.sound.midi.Soundbank;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.Scanner;
 public class Store {
     /* ------------------------------------------------------------------
            text colors
-          ------------------------------------------------------------------ */
+        ------------------------------------------------------------------ */
     private static final String RESET = "\u001B[0m";
     private static final String RED = "\u001B[31m";
     private static final String RED2 = "\u001B[91m";
@@ -176,9 +177,31 @@ public class Store {
             return;
         }
 
+        double total = 0;
         for (Product product : cart) {
             System.out.println(product);
+            total += product.getPrice();
         }
+
+        //Print total
+        System.out.printf(CYAN + "\nTotal: $%.2f\n" + RESET, total);
+
+        // To check out or return
+        System.out.println(WHITE2 + "\nEnter 'C' to check out or 'X' to return to the main menu." + RESET);
+        String choice = scanner.nextLine().trim().toLowerCase();
+
+        switch (choice) {
+            case "c":
+                checkOut(cart, total, scanner);
+                break;
+            case "x":
+                System.out.println(GREEN + "Returning to home screen..." + RESET);
+                break;
+            default:
+                System.out.println(YELLOW + "Invalid choice. Returning to home screen." + RESET);
+                break;
+        }
+
     }
 
     /**
@@ -188,11 +211,66 @@ public class Store {
      * 3. Display a simple receipt.
      * 4. Clear the cart.
      */
-    public static void checkOut(ArrayList<Product> cart,
-                                double totalAmount,
-                                Scanner scanner) {
-        // TODO: implement steps listed above
+    public static void checkOut(ArrayList<Product> cart, double totalAmount, Scanner scanner) {
+
+        System.out.println(BOLD + BLUE + "\n--- CHECKOUT ---\n" + RESET);
+        System.out.printf(CYAN + "Total amount owed: $%.2f\n" + RESET, totalAmount);
+
+        // 1. Confirm purchase
+        System.out.println(GREEN + "Would you like to proceed with your purchase? (Y/N)" + RESET);
+        String confirm = scanner.nextLine().trim().toLowerCase();
+
+        if (!confirm.equals("y")) {
+            System.out.println(YELLOW + "Checkout canceled. Returning to cart." + RESET);
+            return;
+        }
+
+        // 2️. Accept payment
+        double payment = 0;
+        while (true) {
+            System.out.print(CYAN + "Enter payment amount (cash): $" + RESET);
+            String input = scanner.nextLine().trim();
+
+            try {
+                payment = Double.parseDouble(input);
+                if (payment < totalAmount) {
+                    double missingAmount = totalAmount - payment;
+                    System.out.printf(RED + "Insufficient amount. You still owe $%.2f\n" + RESET, missingAmount);
+
+                    // Ask if user want to retry or cancel check out
+                    System.out.println(WHITE2 + "Would you like to try again? (Y to retry / N to cancel checkout)" + RESET);
+                    String retry = scanner.nextLine().trim().toLowerCase();
+
+                    if (!retry.equals("y")) {
+                        System.out.println(YELLOW + "Checkout canceled. Returning to home screen." + RESET);
+                        return;
+                    }
+
+                } else {
+                    break;
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid input. Please enter a valid number." + e + RESET );
+            }
+        }
+
+        // 3️. Calculate change and display receipt
+        double change = payment - totalAmount;
+
+        System.out.println(BOLD + BLUE2 + "\n---------Sales Receipt---------" + RESET);
+        System.out.println(listHeaderLine);
+        for (Product product : cart) {
+            System.out.println(product);
+        }
+        System.out.printf(CYAN + "\nTotal: $%.2f\nPaid: $%.2f\nChange: $%.2f\n" + RESET,
+                totalAmount, payment, change);
+
+        System.out.println(GREEN + "\nThank you for your purchase!" + RESET);
+        //4. Clear the cart
+        cart.clear();
     }
+
+
 
     /**
      * Searches a list for a product by its id.
@@ -200,7 +278,7 @@ public class Store {
      * @return the matching Product, or null if not found
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
-        // TODO: loop over the list and compare ids
+    // TODO: loop over the list and compare ids
 
         for (Product product : inventory) {
             if (id.equalsIgnoreCase(product.getSku())) {
@@ -208,8 +286,6 @@ public class Store {
             }
         }
         return null;
-
     }
+
 }
-
-
