@@ -14,23 +14,27 @@ import java.util.Scanner;
  */
 public class Store {
     /* ------------------------------------------------------------------
-       Shared data
-       ------------------------------------------------------------------ */
-
-    private static final String listHeaderLine = String.format("%-30s|%-40s|%s", "SKU", "Product Name", "Price");
-
-    /* ------------------------------------------------------------------
            text colors
           ------------------------------------------------------------------ */
     private static final String RESET = "\u001B[0m";
     private static final String RED = "\u001B[31m";
+    private static final String RED2 = "\u001B[91m";
     private static final String GREEN = "\u001B[32m";
-    private static final String YELLOW = "\u001B[93m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String YELLOW2 = "\u001B[93m";
     private static final String BLUE = "\u001B[34m";
     private static final String BLUE2 = "\u001B[94m";
     private static final String BOLD = "\u001B[1m";
+    private static final String MAGENTA = "\u001B[35m";
     private static final String WHITE2 = "\u001B[97m";
     private static final String CYAN = "\u001B[36m";
+    private static final String CYAN2 = "\u001B[96m";
+
+    /* ------------------------------------------------------------------
+       Shared data
+       ------------------------------------------------------------------ */
+    private static final String listHeaderLine = String.format(BOLD + CYAN + "%-30s|%-40s|%s", "SKU", "Product Name", "Price" + RESET);
+
 
 
     /* ------------------------------------------------------------------
@@ -50,11 +54,11 @@ public class Store {
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
         while (choice != 3) {
-            System.out.println("\nWelcome to the Online Store!");
-            System.out.println("1. Show Products");
-            System.out.println("2. Show Cart");
-            System.out.println("3. Exit");
-            System.out.print("Your choice: ");
+            System.out.println(YELLOW2 +  BOLD + "\nWelcome to the Online Store!\n" + RESET);
+            System.out.println(WHITE2 + "1. Show Products" + RESET);
+            System.out.println(WHITE2 + "2. Show Cart" + RESET);
+            System.out.println(RED2 + "3. Exit" + RESET);
+            System.out.print(CYAN2 + "Your choice: " + RESET );
 
             if (!scanner.hasNextInt()) {
                 System.out.println("Please enter 1, 2, or 3.");
@@ -117,7 +121,7 @@ public class Store {
         // TODO: show each product (id, name, price),
         //       prompt for an id, find that product, add to cart
 
-        System.out.println("All Available Products: ");
+        System.out.println(BOLD + "\nAll Available Products: \n" + RESET);
         System.out.println(listHeaderLine);
         try {
             for (Product product : inventory) {
@@ -127,23 +131,26 @@ public class Store {
             System.out.println(RED + "Error displaying list. " + e + RESET);
         }
 
-        System.out.println(WHITE2 + "\nTo add a product to cart enter 'Y' and follow the prompt.' \n" +
-                "To go back to the home screen enter 'X'" + RESET);
-        String choice = scanner.nextLine().trim().toLowerCase();
-        switch (choice) {
-            case "y":
-                System.out.print(CYAN + "Please enter the Product ID/SKU: " + RESET);
-                String id = scanner.nextLine().trim();
-                findProductById(id, inventory);
-                break;
+        while (true) {
+            System.out.println(WHITE2 + "\nEnter a Product ID/SKU to add it to your cart,' \n" +
+                    "Or type 'X' to return to the main menu." + RESET);
+            String id = scanner.nextLine().trim().toLowerCase();
 
-            case "x":
-                System.out.println(GREEN + "Exit to home screen. " + RESET);
+            if (id.equalsIgnoreCase("x")) {
+                System.out.println(YELLOW + "Returning to home screen..." + RESET);
                 break;
+            }
 
-            default:
-                System.out.println(YELLOW + "Invalid command. Return to home screen. " + RESET);
+            Product foundProduct = findProductById(id, inventory);
+
+            if (foundProduct == null) {
+                System.out.println(RED + "No product found with that ID. Please try again." + RESET);
+            } else {
+                cart.add(foundProduct);
+                System.out.println(GREEN + "Product: "+ CYAN + foundProduct.getProductName() + GREEN + ", successfully added to your cart."  + RESET);
                 break;
+            }
+
         }
 
 
@@ -159,6 +166,19 @@ public class Store {
         //   • compute the total cost
         //   • ask the user whether to check out (C) or return (X)
         //   • if C, call checkOut(cart, totalAmount, scanner)
+        System.out.println(BOLD + "\nYour Shopping Cart:\n" + RESET);
+        System.out.println(listHeaderLine);
+
+        //This checks if cart is empty. If empty print message and return to home screen.
+        if (cart.isEmpty()) {
+            System.out.println(MAGENTA + "Your cart is empty. Please add a product before checking out.\n"
+                    + YELLOW + "Returning to home screen..." + RESET);
+            return;
+        }
+
+        for (Product product : cart) {
+            System.out.println(product);
+        }
     }
 
     /**
@@ -181,7 +201,14 @@ public class Store {
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
         // TODO: loop over the list and compare ids
+
+        for (Product product : inventory) {
+            if (id.equalsIgnoreCase(product.getSku())) {
+                return product;
+            }
+        }
         return null;
+
     }
 }
 
