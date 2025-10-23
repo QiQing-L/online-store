@@ -89,7 +89,7 @@ Outline potential future enhancements or functionalities you might consider addi
 
 - Additional feature to be developed:
   - When a customer adds multiple items to a cart
-    o  Instead of showing the item multiple times, your
+    - Instead of showing the item multiple times, your
     cart should only display each item once, but
     display the quantity for each item
   
