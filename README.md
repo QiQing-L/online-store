@@ -62,7 +62,7 @@ Include screenshots or GIFs that show your application in action. Use tools like
 
 ![Application Home Screen Screenshot](HomeScreen.png)
 ![Application Products Display Screen Screenshot](ProductsDisplayScreen.png)
-![Application Calculator Page With Error Message Screenshot](CalculatorPageWithMessage%20.png)
+![Application Calculator Page With Error Message Screenshot](CalculatorPageWithMessage.png)
 ![Application Invalid Choice Message Screenshot](InvalidChoiceMessage.png)
 ![Application Purchase Screenshot](Purchase.png)
 ![Application Remove Item From Cart Screenshot](RemoveItemFromCart.png)

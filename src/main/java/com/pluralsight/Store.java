@@ -10,10 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Starter code for the Online Store workshop.
- * Students will complete the TODO sections to make the program work.
- */
 public class Store {
     /* ------------------------------------------------------------------
            text colors
@@ -31,15 +27,11 @@ public class Store {
     private static final String WHITE2 = "\u001B[97m";
     private static final String CYAN = "\u001B[36m";
     private static final String CYAN2 = "\u001B[96m";
-
     /* ------------------------------------------------------------------
        Shared data
        ------------------------------------------------------------------ */
     private static final String listHeaderLine = String.format(BOLD + CYAN + "%-25s|%-40s|%s", "SKU", "Product Name", "Price" + RESET);
     private static final String listHeaderLineColorless = String.format("%-25s|%-40s|%s", "SKU", "Product Name", "Price");
-
-
-
 
     /* ------------------------------------------------------------------
        Main menu
@@ -92,8 +84,6 @@ public class Store {
      * A17|Wireless Mouse|19.99
      */
     public static void loadInventory(String fileName, ArrayList<Product> inventory) {
-        // TODO: read each line, split on "|",
-        //       create a Product object, and add it to the inventory list
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -120,8 +110,6 @@ public class Store {
      * Typing X returns to the main menu.
      */
     public static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
-        // TODO: show each product (id, name, price),
-        //       prompt for an id, find that product, add to cart
 
         System.out.println(BOLD + "\nAll Available Products: \n" + RESET);
         System.out.println(listHeaderLine);
@@ -152,10 +140,7 @@ public class Store {
                 System.out.println(GREEN + "Product: "+ CYAN + foundProduct.getProductName() + GREEN + ", successfully added to your cart."  + RESET);
                 break;
             }
-
         }
-
-
     }
 
     /**
@@ -163,11 +148,7 @@ public class Store {
      * and offers the option to check out.
      */
     public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
-        // TODO:
-        //   • list each product in the cart
-        //   • compute the total cost
-        //   • ask the user whether to check out (C) or return (X)
-        //   • if C, call checkOut(cart, totalAmount, scanner)
+
         System.out.println(BOLD + "\nYour Shopping Cart:\n" + RESET);
         System.out.println(listHeaderLine);
 
@@ -275,7 +256,6 @@ public class Store {
      * @return the matching Product, or null if not found
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
-    // TODO: loop over the list and compare ids
 
         for (Product product : inventory) {
             if (id.equalsIgnoreCase(product.getSku())) {
@@ -325,9 +305,7 @@ public class Store {
         writer.close();
 
         System.out.println(GREEN + "Receipt saved to: " + receiptFile.getAbsolutePath() + RESET);
-    } catch (Exception e) {
-        System.out.println(RED + "Error saving receipt file: " + e + RESET);
-    }
+    } catch (Exception e) {System.out.println(RED + "Error saving receipt file: " + e + RESET);}
 
     }
 
