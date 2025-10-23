@@ -1,7 +1,6 @@
 
 package com.pluralsight;
 
-import javax.sound.midi.Soundbank;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.LocalDate;
@@ -34,7 +33,7 @@ public class Store {
     /* ------------------------------------------------------------------
        Shared data
        ------------------------------------------------------------------ */
-    private static final String listHeaderLine = String.format(BOLD + CYAN + "%-30s|%-40s|%s", "SKU", "Product Name", "Price" + RESET);
+    private static final String listHeaderLine = String.format(BOLD + CYAN + "%-25s|%-40s|%s", "SKU", "Product Name", "Price" + RESET);
 
 
 
@@ -116,9 +115,7 @@ public class Store {
      * Displays all products and lets the user add one to the cart.
      * Typing X returns to the main menu.
      */
-    public static void displayProducts(ArrayList<Product> inventory,
-                                       ArrayList<Product> cart,
-                                       Scanner scanner) {
+    public static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         // TODO: show each product (id, name, price),
         //       prompt for an id, find that product, add to cart
 
@@ -226,7 +223,7 @@ public class Store {
         }
 
         // 2️. Accept payment
-        double payment = 0;
+        double payment;
         while (true) {
             System.out.print(CYAN + "Enter payment amount (cash): $" + RESET);
             String input = scanner.nextLine().trim();
@@ -255,17 +252,7 @@ public class Store {
         }
 
         // 3️. Calculate change and display receipt
-        double change = payment - totalAmount;
 
-        System.out.println(BOLD + BLUE2 + "\n---------Sales Receipt---------" + RESET);
-        System.out.println(listHeaderLine);
-        for (Product product : cart) {
-            System.out.println(product);
-        }
-        System.out.printf(CYAN + "\nTotal: $%.2f\nPaid: $%.2f\nChange: $%.2f\n" + RESET,
-                totalAmount, payment, change);
-
-        System.out.println(GREEN + "\nThank you for your purchase!" + RESET);
         //4. Clear the cart
         cart.clear();
     }
@@ -288,4 +275,18 @@ public class Store {
         return null;
     }
 
+    public static void printAndSaveReceipt(ArrayList<Product> cart, double totalAmount, double payment){
+        double change = payment - totalAmount;
+
+        System.out.println(BOLD + BLUE2 + "\n---------Sales Receipt---------" + RESET);
+        System.out.println(listHeaderLine);
+        for (Product product : cart) {
+            System.out.println(product);
+        }
+        System.out.printf(CYAN + "\nTotal: $%.2f\nPaid: $%.2f\nChange: $%.2f\n" + RESET,
+                totalAmount, payment, change);
+
+        System.out.println(GREEN + "\nThank you for your purchase!" + RESET);
+
+    }
 }
