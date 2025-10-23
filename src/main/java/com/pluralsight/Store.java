@@ -2,9 +2,11 @@
 package com.pluralsight;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.io.FileWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -34,6 +36,8 @@ public class Store {
        Shared data
        ------------------------------------------------------------------ */
     private static final String listHeaderLine = String.format(BOLD + CYAN + "%-25s|%-40s|%s", "SKU", "Product Name", "Price" + RESET);
+    private static final String listHeaderLineColorless = String.format("%-25s|%-40s|%s", "SKU", "Product Name", "Price");
+
 
 
 
@@ -183,11 +187,16 @@ public class Store {
         //Print total
         System.out.printf(CYAN + "\nTotal: $%.2f\n" + RESET, total);
 
-        // To check out or return
-        System.out.println(WHITE2 + "\nEnter 'C' to check out or 'X' to return to the main menu." + RESET);
+        // To remove product, check out or return
+        System.out.println(WHITE2 + "\nR - Remove an item"
+                +"\nC - Check out"
+                + GREEN + "\nX - Return to home screen" + RESET);
         String choice = scanner.nextLine().trim().toLowerCase();
 
         switch (choice) {
+            case "r":
+                removeFromCart(cart, scanner);
+                break;
             case "c":
                 checkOut(cart, total, scanner);
                 break;
@@ -252,6 +261,7 @@ public class Store {
         }
 
         // 3️. Calculate change and display receipt
+        printAndSaveReceipt(cart, totalAmount, payment);
 
         //4. Clear the cart
         cart.clear();
@@ -278,15 +288,73 @@ public class Store {
     public static void printAndSaveReceipt(ArrayList<Product> cart, double totalAmount, double payment){
         double change = payment - totalAmount;
 
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy/MM/dd   HH:mm:ss");
+        String timestamp1 = LocalDateTime.now().format(formatter1);
+        StringBuilder receipt = new StringBuilder();
+
+
+        //print receipt and add to StringBuilder
         System.out.println(BOLD + BLUE2 + "\n---------Sales Receipt---------" + RESET);
+        System.out.println(timestamp1);
         System.out.println(listHeaderLine);
+        receipt.append("\n---------Sales Receipt---------\n");
+        receipt.append(timestamp1).append("\n");
+        receipt.append(listHeaderLineColorless).append("\n");
+
         for (Product product : cart) {
             System.out.println(product);
+            receipt.append(product).append("\n");
         }
         System.out.printf(CYAN + "\nTotal: $%.2f\nPaid: $%.2f\nChange: $%.2f\n" + RESET,
                 totalAmount, payment, change);
+        receipt.append(String.format("\nTotal: $%.2f\nPaid: $%.2f\nChange: $%.2f\n",totalAmount, payment, change));
 
-        System.out.println(GREEN + "\nThank you for your purchase!" + RESET);
+        System.out.println(GREEN + "\nThank you for your purchase!\n" + RESET);
+
+        // Save receipt to file
+    try {
+        File folder = new File("Receipts");
+        if (!folder.exists()) folder.mkdir();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        File receiptFile = new File(folder, timestamp + ".txt");
+
+        FileWriter writer = new FileWriter(receiptFile);
+        writer.write(receipt.toString());
+        writer.close();
+
+        System.out.println(GREEN + "Receipt saved to: " + receiptFile.getAbsolutePath() + RESET);
+    } catch (Exception e) {
+        System.out.println(RED + "Error saving receipt file: " + e + RESET);
+    }
 
     }
+
+    /**
+     * Allows the user to remove an item from the cart by its SKU.
+     */
+    public static void removeFromCart(ArrayList<Product> cart, Scanner scanner) {
+        System.out.print(CYAN + "Enter the SKU of the item you want to remove: " + RESET);
+        String sku = scanner.nextLine().trim();
+
+        boolean removed = false;
+
+        for (int i = 0; i < cart.size(); i++) {
+            if (cart.get(i).getSku().equalsIgnoreCase(sku)) {
+                Product removedProduct = cart.remove(i);
+                System.out.println(GREEN + "Removed: " + removedProduct.getProductName() + RESET);
+                removed = true;
+                break;
+            }
+        }
+
+        if (!removed) {
+            System.out.println(RED + "No product found with that SKU in your cart." + RESET);
+        }
+
+        System.out.println(YELLOW + "Updated cart:" + RESET);
+        displayCart(cart, scanner); // show updated cart after removal
+    }
+
 }
